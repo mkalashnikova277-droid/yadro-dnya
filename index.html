@@ -513,6 +513,16 @@ function monBlock(){
   });
   s+='</div>';
 
+  var kSum=0,kN=0;
+  monthDays(m).forEach(function(k){ var kv=(S.history[k]||{}).kalorii||0; if(kv){ kSum+=kv; kN++; } });
+  var kb=find('kalorii');
+  if(kN){
+    var kAvg=Math.round(kSum/kN);
+    var inb=(kb&&kAvg>=kb.goalMin&&kAvg<=kb.goalMax);
+    s+='<p class="obs">Средние калории за '+kN+' '+plural(kN,'день','дня','дней')+' с записью: <b>'+money(kAvg)+' ккал</b>'
+     + (kb? ' · '+(inb?'в коридоре '+kb.goalMin+'–'+kb.goalMax:(kAvg<kb.goalMin?'ниже коридора '+kb.goalMin+'–'+kb.goalMax:'выше коридора '+kb.goalMin+'–'+kb.goalMax)) : '')+'.</p>';
+  }
+
   s+='<p class="obs">Лучшая серия месяца: <b>'+st.best+' '+plural(st.best,'день','дня','дней')+' подряд</b>. '
    + 'Отложено: <b>'+money(S.months[m]||0)+' из '+money(CFG.monthly.goal)+' '+CFG.monthly.unit+'</b>.</p>';
 
