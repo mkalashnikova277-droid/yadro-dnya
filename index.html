@@ -143,6 +143,15 @@
   .chip.kcal input:focus{outline:none}
   .chip.kcal input::placeholder{color:currentColor;opacity:.5}
 
+  /* ---------- статус калорий ---------- */
+  .kcalstat{margin:-10px 0 20px;padding:11px 15px;border-radius:18px;display:flex;flex-direction:column;gap:2px}
+  .kcalstat b{font-size:14px;font-weight:900;letter-spacing:-.01em}
+  .kcalstat span{font-size:11px;font-weight:700;opacity:.72}
+  .kcalstat.none{background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line);color:var(--mute);font-size:12px;font-weight:700}
+  .kcalstat.ok{background:var(--c3s);color:var(--ink)}
+  .kcalstat.low{background:var(--c4s);color:var(--ink)}
+  .kcalstat.high{background:var(--c1s);color:#7A2F24}
+
   /* ---------- оценка дня ---------- */
   .mood{background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line);border-radius:24px;padding:15px 14px 13px;margin-bottom:20px}
   .mood h3{font-size:14.5px;font-weight:800;letter-spacing:-.02em;margin:0 0 12px 4px}
@@ -695,6 +704,17 @@ function sumBlock(){
   return s+'</div>';
 }
 
+function kcalStat(rec){
+  var b=find('kalorii'); if(!b) return '';
+  var v=rec[b.id]||0, lo=b.goalMin, hi=b.goalMax;
+  if(!v) return '<div class="kcalstat none">Впиши калории за день — покажу статус и сколько до коридора '+lo+'–'+hi+'</div>';
+  var cls,label,hint;
+  if(v<lo){ cls='low'; label='мало'; hint='ещё '+(lo-v)+' ккал до нижней границы '+lo; }
+  else if(v>hi){ cls='high'; label='много'; hint='на '+(v-hi)+' ккал выше верхней границы '+hi; }
+  else { cls='ok'; label='в норме'; hint='до верха коридора ещё '+(hi-v)+' ккал'; }
+  return '<div class="kcalstat '+cls+'"><b>'+v+' ккал · '+label+'</b><span>'+hint+'</span></div>';
+}
+
 function tile(h,val,i,k){
   if(!applies(h,k)){
     return '<div class="tile off" style="--acc:var(--c'+(i+1)+');--soft:var(--c'+(i+1)+'s)">'
@@ -768,6 +788,7 @@ function render(){
     }
   });
   h+='</div>';
+  h+=kcalStat(rec);
 
   h+=moodBlock(rec);
 
