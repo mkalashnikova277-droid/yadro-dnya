@@ -705,7 +705,9 @@ function tile(h,val,i,k){
   var done=isDone(h,val), r=ratio(h,val), part=(!done&&(val||0)>0);
   var body;
   if(h.type==='check') body='<div class="big">'+(done?'есть':'—')+'</div>';
-  else if(h.type==='count') body='<div class="big">'+(val||0)+'<s>/'+h.goal+'</s></div>';
+  else if(h.type==='count') body=(h.id==='voda')
+    ? '<div class="big">'+((val||0)*250)+'<s> / '+(h.goal*250)+' мл</s></div>'
+    : '<div class="big">'+(val||0)+'<s>/'+h.goal+'</s></div>';
   else body='<input type="number" inputmode="numeric" data-in="'+h.id+'" value="'+(val?val:'')+'" placeholder="'+h.goal+'" aria-label="'+h.title+'">';
   var tap=(h.type==='check'||h.type==='count');
   var vars='--acc:var(--c'+(i+1)+');--soft:var(--c'+(i+1)+'s)';
@@ -957,7 +959,7 @@ var FALLBACK={
     {
       "id": "voda",
       "title": "Вода",
-      "note": "1,5–2 л",
+      "note": "+250 мл за нажатие · цель 2 л",
       "type": "count",
       "goal": 8,
       "step": 1,
