@@ -788,6 +788,7 @@ function render(){
   h+='<div class="sync'+(CLOUD?'':' off')+'"><i></i>'
    + (CLOUD?'Копия в Telegram — история вернётся на любом устройстве':'Данные только на этом устройстве')+'</div>';
   h+='<p class="note">'+CFG.rules.streakNote+'</p>';
+  h+='<button id="reset-all" style="display:block;margin:18px auto 0;padding:9px 18px;border-radius:999px;background:none;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--mute);font-size:11px;font-weight:700">Сбросить все данные</button>';
   if(window.__offline) h+='<div class="offline">Встроенные данные — data.json не загрузился</div>';
 
   document.getElementById('app').innerHTML=h;
@@ -909,6 +910,31 @@ function bind(){
     if(!v) return;
     var k=mk(); S.months[k]=(S.months[k]||0)+v; f.value=''; haptic('medium'); save(); render();
   });
+
+  var ra=document.getElementById('reset-all');
+  if(ra) ra.addEventListener('click',function(){
+    function doReset(){
+      try{ localStorage.removeItem('yadro-state'); }catch(e){}
+      mem={};
+      S={history:{},weeks:{},months:{},shop:{}};
+      VIEW=null; MONVIEW=null; SHOPEDIT=false; prevCore=null;
+      if(CLOUD){
+        try{
+          CLOUD.getKeys(function(err,keys){
+            var yk=(keys||[]).filter(function(k){ return k.indexOf('yadro')===0; });
+            if(yk.length){ CLOUD.removeItems(yk,function(){ location.reload(); }); }
+            else location.reload();
+          });
+        }catch(e){ location.reload(); }
+      } else location.reload();
+    }
+    var msg='Стереть все данные трекера (в т.ч. копию в облаке Telegram)? Действие необратимо.';
+    try{
+      if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.showConfirm){
+        Telegram.WebApp.showConfirm(msg,function(ok){ if(ok) doReset(); });
+      } else if(confirm(msg)) doReset();
+    }catch(e){ if(confirm(msg)) doReset(); }
+  });
 }
 
 var FALLBACK={
@@ -1005,86 +1031,9 @@ var FALLBACK={
     "unit": "₽",
     "note": "на вклад, каждый месяц"
   },
-  "history": {
-    "2026-09-01": {
-      "zaryadka": 1,
-      "voda": 8,
-      "shagi": 6120,
-      "chtenie": 24,
-      "dush": 1,
-      "vitaminy": 1,
-      "blagodarnost": 1,
-      "kalorii": 1620,
-      "mood": 4,
-      "rev": 28400
-    },
-    "2026-09-02": {
-      "zaryadka": 1,
-      "voda": 8,
-      "shagi": 5400,
-      "chtenie": 31,
-      "dush": 1,
-      "vitaminy": 0,
-      "blagodarnost": 1,
-      "kalorii": 1580,
-      "mood": 3,
-      "rev": 31200
-    },
-    "2026-09-03": {
-      "zaryadka": 0,
-      "voda": 6,
-      "shagi": 3100,
-      "chtenie": 12,
-      "dush": 0,
-      "vitaminy": 1,
-      "blagodarnost": 1,
-      "kalorii": 1890,
-      "mood": 2,
-      "rev": 19800
-    },
-    "2026-09-04": {
-      "zaryadka": 1,
-      "voda": 8,
-      "shagi": 7250,
-      "chtenie": 20,
-      "dush": 1,
-      "vitaminy": 1,
-      "blagodarnost": 1,
-      "kalorii": 1510,
-      "mood": 4,
-      "rev": 42600
-    },
-    "2026-09-05": {
-      "zaryadka": 1,
-      "voda": 9,
-      "shagi": 5860,
-      "chtenie": 40,
-      "dush": 1,
-      "vitaminy": 1,
-      "blagodarnost": 1,
-      "kalorii": 1660,
-      "mood": 5,
-      "rev": 51300
-    },
-    "2026-09-06": {
-      "zaryadka": 1,
-      "voda": 8,
-      "shagi": 5030,
-      "chtenie": 22,
-      "dush": 0,
-      "vitaminy": 1,
-      "blagodarnost": 1,
-      "kalorii": 1700,
-      "mood": 4,
-      "rev": 37900
-    }
-  },
-  "weeks": {
-    "2026-W36": 1
-  },
-  "months": {
-    "2026-09": 100000
-  },
+  "history": {},
+  "weeks": {},
+  "months": {},
   "mood": {
     "title": "Как прошёл день",
     "levels": [
